@@ -41,9 +41,9 @@ def local_command(cmd):
     if process.returncode == 0:
         return str(stdout).strip()
     else:
-        print "RC: %s" % process.returncode
-        print stdout
-        raise Exception("stderr: %s" % str(stderr))
+        print("RC: %s" % process.returncode)
+        print(stdout)
+#raise Exception("stderr: %s" % str(stderr))
 
 def find_in_tarball(tarball, filename):
     tar = tarfile.open(tarball)
@@ -160,7 +160,7 @@ class Host(object):
 
         try:
             os_rec = self.get_os_info()
-            for k, v in os_rec.iteritems():
+            for k, v in os_rec.items():
                 rec[k] = v
         except Exception:
             #Ignore failures. Only supports XS right now.
@@ -198,7 +198,7 @@ def combine_recs(rec_list, key):
     for rec in rec_list:
         rec_key = rec[key]
         if rec_key in final_recs:
-            for k, v in rec.iteritems():
+            for k, v in rec.items():
                 if k in final_recs[rec_key] and final_recs[rec_key][k] != v:
                     raise Exception("Mis-match for key '%s'" % k)
                 final_recs[rec_key][k] = v
@@ -234,7 +234,7 @@ class HostFromLogs(Host):
             return devs
         except FileNotFound:
             # Fall back to looking for the file lspci-vv.out
-            print "***lspci-nnm.out found. Falling back to looking for lspci-vv.out and lspci-n.out.***"
+            print("***lspci-nnm.out found. Falling back to looking for lspci-vv.out and lspci-n.out.***")
             lspci_vv_recs = parse_data(LspciVVParser, self._load_from_file('lspci-vv.out'))
             lspci_n_recs = parse_data(LspciNParser, self._load_from_file('lspci-n.out'))
             all_recs = lspci_vv_recs + lspci_n_recs
@@ -302,15 +302,16 @@ def rec_to_table(rec):
     table = PrettyTable(["Key", "Value"])
     table.align['Key'] = 'l'
     table.align['Value'] = 'l'
-    for k, v in rec.iteritems():
+    for k, v in rec.items():
         table.add_row([k, v])
     return table
 
 def tabulate_recs(recs, header):
     table = PrettyTable(header)
     for rec in recs:
-        vls = [rec[k] for k in header]
-        table.add_row(vls)
+        if rec:
+            vls = [rec[k] for k in header]
+            table.add_row(vls)
     return table
 
 def tabulate_pci_recs(recs):
@@ -345,7 +346,7 @@ def create_unit(title, content):
 def validate_args(args):
     if args.machine != 'localhost':
         if not args.username or not args.password:
-            print "Error: you must specify a username and password to query a remote machine."
+            print("Error: you must specify a username and password to query a remote machine.")
             sys.exit(1)
 
 def system_info(host, options):
@@ -429,6 +430,6 @@ def main():
         options = filter_choices
 
     if args.export:
-        print export_system_info(host, options)
+        print(export_system_info(host, options))
     else:
-        print system_info(host, options)
+        print(system_info(host, options))
